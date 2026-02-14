@@ -414,7 +414,7 @@
             moveNoButton();
         });
 
- function moveNoButton() {
+        function moveNoButton() {
             // Move to opposite side - if on left, go right; if on right, go left
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
@@ -423,20 +423,17 @@
             const moveDistance = viewportWidth * 0.35; // Move 35% of viewport width
             const newX = noButtonPosition.x > 0 ? -moveDistance : moveDistance;
             
-            // Random Y position within middle 50% of viewport
-            // Middle 50% means between 25% and 75% of viewport height
-            const middleRangeHeight = viewportHeight * 0.8; // 80% of viewport
-            const middleRangeStart = viewportHeight * 0.5; // Start at 50%
+            // Random Y position constrained towards top half
+            // Range between 15% and 50% of viewport height (top-biased middle section)
+            const rangeHeight = viewportHeight * 0.35; // 35% range
+            const rangeStart = viewportHeight * 0.15; // Start at 15% from top
             
-            // Random position within the middle 50%
-            const randomYInMiddle = middleRangeStart + (Math.random() * middleRangeHeight);
+            // Random position within the top-biased range
+            const randomYInRange = rangeStart + (Math.random() * rangeHeight);
             
             // Convert to offset from center
-             centerY = viewportHeight;
-            let newY = randomYInMiddle - centerY;
-            if (newY > 600){newY -= 100;}
-
-
+            const centerY = viewportHeight / 2;
+            const newY = randomYInRange - centerY;
             
             // Update position tracking
             noButtonPosition.x = newX;
