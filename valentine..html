@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine? 💕</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe5ec 50%, #ffd6e8 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Floating hearts background */
+        .heart-bg {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.15;
+            animation: float 15s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+
+        /* Envelope stage: no modal, just envelope on pink background */
+        #envelopePage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+        }
+
+
+        /* Landing Page - Envelope */
+        .envelope {
+            position: relative;
+            width: 220px;
+            height: 160px;
+            background: #f5e6d3;
+            border: 1px solid #d4c4a8;
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .envelope:hover:not(.opening) {
+            transform: scale(1.05);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(165deg, #e8d5c4 0%, #d4c4a8 45%, #c9b89a 100%);
+            clip-path: polygon(0 0, 50% 50%, 100% 0);
+            transform-origin: top center;
+            transition: transform 0.8s cubic-bezier(0.34, 1.2, 0.64, 1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .envelope-flap-outline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .envelope-flap-outline line {
+            vector-effect: non-scaling-stroke;
+        }
+
+        .envelope.opening .envelope-flap {
+            transform: rotateX(-170deg);
+        }
+
+        .envelope-heart {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            color: #c41e3a;
+            pointer-events: none;
+            z-index: 1;
+            transition: opacity 0.35s ease;
+        }
+
+        .envelope-heart.hidden {
+            opacity: 0;
+        }
+
+        .envelope-heart svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .envelope {
+                width: 300px;
+                height: 218px;
+            }
+            .envelope-heart {
+                width: 52px;
+                height: 52px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .envelope {
+                width: 340px;
+                height: 247px;
+            }
+            .envelope-heart {
+                width: 58px;
+                height: 58px;
+            }
+        }
+
+        .envelope-page-fade-out {
+            animation: envelopeFadeOut 0.5s ease forwards;
+        }
+
+        .question-page-fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes envelopeFadeOut {
+            to { opacity: 0; transform: scale(0.96); }
+        }
+
+        /* Question Page */
+        #question-page {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        #question-page.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .question-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 60px rgba(255, 77, 109, 0.25);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #ff4d6d;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            color: #555;
+            margin-bottom: 40px;
+        }
+
+        .button-container {
+            position: relative;
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+            min-height: 100px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        #yes-btn {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            transform: scale(1);
+        }
+
+        #yes-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(76, 175, 80, 0.4);
+        }
+
+        #no-btn {
+            max-width:100%;
+            height:100px;
+            color: rgb(0, 0, 0);
+            position: absolute;
+            transition: all 0.3s ease;
+        }
+
+        /* Success Page */
+        #success-page {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        #success-page.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .success-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 60px rgba(255, 77, 109, 0.25);
+            max-width: 600px;
+        }
+
+        .success-emoji {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .success-message {
+            font-size: 2rem;
+            color: #ff4d6d;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .success-subtext {
+            font-size: 1.3rem;
+            color: #555;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .question-text { font-size: 1.2rem; }
+            .btn { font-size: 1rem; padding: 12px 30px; }
+            .question-card, .success-card { padding: 40px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Hearts -->
+    <div class="heart-bg" style="top: 10%; left: 10%;">💕</div>
+    <div class="heart-bg" style="top: 20%; right: 15%; animation-delay: 2s;">❤️</div>
+    <div class="heart-bg" style="bottom: 15%; left: 20%; animation-delay: 4s;">💖</div>
+    <div class="heart-bg" style="bottom: 25%; right: 10%; animation-delay: 6s;">💗</div>
+    <div class="heart-bg" style="top: 40%; left: 5%; animation-delay: 3s;">💝</div>
+    <div class="heart-bg" style="top: 60%; right: 5%; animation-delay: 5s;">💞</div>
+
+<body>
+    <!-- ENVELOPE: no modal, just envelope on pink background -->
+    <div id="envelopeStage">
+        <div class="envelope" id="envelope">
+            <div class="envelope-heart" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" clip-rule="evenodd" /></svg>
+            </div>
+            <div class="envelope-flap">
+                <svg class="envelope-flap-outline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                    <line x1="0" y1="0" x2="50" y2="50" stroke="#d4c4a8" stroke-width="3" vector-effect="non-scaling-stroke" />
+                    <line x1="50" y1="50" x2="100" y2="0" stroke="#d4c4a8" stroke-width="3" vector-effect="non-scaling-stroke" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Page -->
+    <div id="question-page">
+        <div class="question-card">
+            <h1>Hi my love!</h1>
+<div class="tenor-gif-embed" data-postid="17946877" data-share-method="host" data-aspect-ratio="1.06667" data-width="100%"><a href="https://tenor.com/view/mochi-mochi-peach-cat-cat-kitty-cute-box-gif-17946877">Mochi Mochi Peach Cat Cat Sticker</a>from <a href="https://tenor.com/search/mochi+mochi+peach+cat-stickers">Mochi Mochi Peach Cat Stickers</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>            <p class="question-text">Will you be my Valentine? 🥰</p>
+            <div class="button-container" id="button-container">
+                <button class="btn" id="yes-btn">Yes of course! 💕</button>
+                <button class="btn" id="no-btn"><div class="tenor-gif-embed" data-postid="8754256510208746708" data-share-method="host" data-aspect-ratio="0.948276" data-width="100%"><a href="https://tenor.com/view/begging-cat-cat-cute-sweet-gif-8754256510208746708">Begging Cat Cat Sticker</a>from <a href="https://tenor.com/search/begging+cat-stickers">Begging Cat Stickers</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+                    Hmmmm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Page -->
+    <div id="success-page">
+        <div class="success-card">
+            <div class="tenor-gif-embed" data-postid="1977951428809046398" data-share-method="host" data-aspect-ratio="0.801205" data-width="100%"><a href="https://tenor.com/view/love-mochi-love-mochi-gif-1977951428809046398">Love Mochi Love GIF</a>from <a href="https://tenor.com/search/love-gifs">Love GIFs</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+            <div class="success-message">happy valentines! :3</div>
+            <div class="success-subtext">💞 2.14.26 💞</div>
+        </div>
+    </div>
+
+    <!-- Confetti Script -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        // Elements
+        const envelopeStage = document.getElementById('envelopeStage');
+        const envelope = document.getElementById('envelope');
+        const questionPage = document.getElementById('question-page');
+        const successPage = document.getElementById('success-page');
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+        const buttonContainer = document.getElementById('button-container');
+
+        let noButtonScale = 1;
+        let yesButtonScale = 1;
+        let noButtonPosition = { x: 0, y: 0 };
+
+        envelope.addEventListener('click', () => {
+            envelope.style.pointerEvents = 'none';
+            const heart = envelope.querySelector('.envelope-heart');
+            heart.classList.add('hidden');
+            setTimeout(() => {
+                envelope.classList.add('opening');
+                setTimeout(() => {
+                    envelopeStage.classList.add('envelope-stage-fade-out');
+                    setTimeout(() => {
+                        envelopeStage.style.display = 'none';
+                        document.body.classList.add('show-modal');
+                        
+                        setTimeout(() => {
+                    questionPage.classList.add('active');
+                        });
+                    }, 450);
+                }, 700);
+            }, 380);
+        });
+
+        // Yes button - show success with confetti
+        yesBtn.addEventListener('click', () => {
+            questionPage.classList.remove('active');
+            
+            setTimeout(() => {
+                successPage.classList.add('active');
+                
+                // Confetti!
+                const duration = 3000;
+                const end = Date.now() + duration;
+
+                (function frame() {
+                    confetti({
+                        particleCount: 3,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: ['#ff4d6d', '#ff8fa3', '#ffc2d1']
+                    });
+                    confetti({
+                        particleCount: 3,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: ['#ff4d6d', '#ff8fa3', '#ffc2d1']
+                    });
+
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                }());
+            }, 500);
+        });
+
+        // No button - move away and grow Yes button
+        noBtn.addEventListener('mouseenter', moveNoButton);
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+
+        function moveNoButton() {
+            // Move to opposite side - if on left, go right; if on right, go left
+            // If on top, go bottom; if on bottom, go top
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Determine the opposite horizontal position
+            const moveDistance = viewportWidth * 0.35; // Move 35% of viewport width
+            const newX = noButtonPosition.x > 0 ? -moveDistance : moveDistance;
+            
+            // Alternate vertical position slightly for variety
+            const verticalVariation = (Math.random() - 0.5) * 150;
+            const newY = noButtonPosition.y > 0 ? -100 + verticalVariation : 100 + verticalVariation;
+            
+            // Update position tracking
+            noButtonPosition.x = newX;
+            noButtonPosition.y = newY;
+            
+            // Move the No button
+            noBtn.style.transform = `translate(${newX}px, ${newY}px) scale(${noButtonScale})`;
+            
+            // Shrink No button slightly
+            noButtonScale = Math.max(0.5, noButtonScale - 0.1);
+            
+            // Grow Yes button
+            yesButtonScale += 0.15;
+            yesBtn.style.transform = `scale(${yesButtonScale})`;
+        }
+
+        // Prevent No button click (just in case they're quick!)
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+    </script>
+</body>
+</html>
