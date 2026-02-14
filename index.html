@@ -414,7 +414,7 @@
             moveNoButton();
         });
 
-        function moveNoButton() {
+    function moveNoButton() {
             // Move to opposite side - if on left, go right; if on right, go left
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
@@ -433,7 +433,21 @@
             
             // Convert to offset from center
             const centerY = viewportHeight / 2;
-            const newY = randomYInRange - centerY;
+            let newY = randomYInRange - centerY;
+            
+            // Get the Yes button's current vertical position
+            const yesButtonRect = yesBtn.getBoundingClientRect();
+            const yesButtonCenterY = yesButtonRect.top + yesButtonRect.height / 2;
+            
+            // Calculate where the No button would be with newY
+            const noButtonRect = noBtn.getBoundingClientRect();
+            const noButtonCenterY = centerY + newY;
+            
+            // If No button would be lower than Yes button, shift it upwards
+            if (noButtonCenterY > yesButtonCenterY) {
+                const shiftAmount = noButtonCenterY - yesButtonCenterY + 80; // 80px extra buffer
+                newY = newY - shiftAmount;
+            }
             
             // Update position tracking
             noButtonPosition.x = newX;
